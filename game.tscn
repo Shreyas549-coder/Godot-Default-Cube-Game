@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bm57i4ggs35i2"]
+
+[ext_resource type="PackedScene" uid="uid://cum6qv1bj4jgk" path="res://Scenes/player.tscn" id="1_80nbo"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_mwb40"]
+
+[node name="Game" type="Node" unique_id=2008014920]
+
+[node name="Platform" type="Area3D" parent="." unique_id=1361969981]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform" unique_id=1938650120]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, 0)
+shape = SubResource("WorldBoundaryShape3D_mwb40")
+
+[node name="Player" parent="." unique_id=620238369 instance=ExtResource("1_80nbo")]
