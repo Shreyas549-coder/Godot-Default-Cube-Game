@@ -1,15 +1,33 @@
 [gd_scene format=3 uid="uid://bm57i4ggs35i2"]
 
-[ext_resource type="PackedScene" uid="uid://cum6qv1bj4jgk" path="res://Scenes/player.tscn" id="1_80nbo"]
+[ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="1_80nbo"]
 
-[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_mwb40"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_e2o6t"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
 
-[node name="Game" type="Node" unique_id=2008014920]
+[sub_resource type="Sky" id="Sky_feb5d"]
+sky_material = SubResource("ProceduralSkyMaterial_e2o6t")
 
-[node name="Platform" type="Area3D" parent="." unique_id=1361969981]
+[sub_resource type="Environment" id="Environment_fc0e3"]
+background_mode = 2
+sky = SubResource("Sky_feb5d")
+tonemap_mode = 2
+glow_enabled = true
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform" unique_id=1938650120]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, 0)
-shape = SubResource("WorldBoundaryShape3D_mwb40")
+[node name="Game" type="Node3D" unique_id=700002633]
 
-[node name="Player" parent="." unique_id=620238369 instance=ExtResource("1_80nbo")]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1204267166]
+environment = SubResource("Environment_fc0e3")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1980282393]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Floor" type="CSGBox3D" parent="." unique_id=221523933]
+use_collision = true
+size = Vector3(20, 0.1, 20)
+
+[node name="Player" parent="." unique_id=956741511 instance=ExtResource("1_80nbo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2032919, 0, 1.5905895)
+input_back = "Back"
