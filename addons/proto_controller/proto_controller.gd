@@ -134,6 +134,9 @@ func _physics_process(delta: float) -> void:
 			# Gradually stop
 			velocity.x = move_toward(velocity.x, 0, move_speed)
 			velocity.z = move_toward(velocity.z, 0, move_speed)
+	elif Input.is_action_pressed("Car") and Input.is_action_pressed("Gears") and Input.is_action_pressed("Park"):
+		velocity.x = 0
+		velocity.z = 0
 
 	# Apply movement
 	move_and_slide()
