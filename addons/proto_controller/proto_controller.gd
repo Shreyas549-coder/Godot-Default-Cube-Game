@@ -123,6 +123,17 @@ func _physics_process(delta: float) -> void:
 			# Gradually stop
 			velocity.x = move_toward(velocity.x, 0, move_speed)
 			velocity.z = move_toward(velocity.z, 0, move_speed)
+	elif Input.is_action_pressed("Car") and Input.is_action_pressed("Gears") and Input.is_action_pressed("Reverse_Gear"):
+		if Input.is_action_pressed("Forward"):  # W
+			var input_dir = Input.get_vector(input_left, input_right, "Reverse_Gear", "Brake")
+			var move_dir = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+			if move_dir:
+				velocity.x = move_dir.x * move_speed * -1
+				velocity.z = move_dir.z * move_speed * -1
+		elif Input.is_action_pressed("Brake"):  # S
+			# Gradually stop
+			velocity.x = move_toward(velocity.x, 0, move_speed)
+			velocity.z = move_toward(velocity.z, 0, move_speed)
 
 	# Apply movement
 	move_and_slide()
