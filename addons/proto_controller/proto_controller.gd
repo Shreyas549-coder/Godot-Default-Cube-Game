@@ -36,13 +36,15 @@ extends CharacterBody3D
 ## Name of Input Action to move Forward.
 @export var input_forward : String = "Forward"
 ## Name of Input Action to move Backward.
-@export var input_back : String = "Backward"
+@export var input_back : String = "Brake"
 ## Name of Input Action to Jump.
 @export var input_jump : String = "Jump"
 ## Name of Input Action to Sprint.
 @export var input_sprint : String = "Sprint"
 ## Name of Input Action to toggle freefly mode.
 @export var input_freefly : String = "Fly"
+
+var gear_reverse = 1
 
 var mouse_captured : bool = false
 var look_rotation : Vector2
@@ -79,54 +81,52 @@ func _unhandled_input(event: InputEvent) -> void:
 			disable_freefly()
 
 func _physics_process(delta: float) -> void:
-	# If freeflying, handle freefly and nothing else
+	# Camera blackout logic (optional, keeps your previous setup)
 	if not Input.is_action_pressed("Camera"):
-		camera.current = false	
+		camera.current = false    
 		black_out.current = true
-		print("Controlling camera")
 	else:
-		camera.current = true	
+		camera.current = true    
 		black_out.current = false
-	
+
+	# Freefly logic (if you still want it)
 	if can_freefly and freeflying:
 		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
 		var motion := (head.global_basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 		motion *= freefly_speed * delta
 		move_and_collide(motion)
 		return
-	
-	# Apply gravity to velocity
-	if has_gravity:
-		if not is_on_floor():
-			velocity += get_gravity() * delta
 
-	# Apply jumping
-	if can_jump:
-		if Input.is_action_just_pressed(input_jump) and is_on_floor():
-			velocity.y = jump_velocity
+	# Gravity
+	if has_gravity and not is_on_floor():
+		velocity += get_gravity() * delta
 
-	# Modify speed based on sprinting
+	# Jumping
+	if can_jump and Input.is_action_just_pressed(input_jump) and is_on_floor():
+		velocity.y = jump_velocity
+
+	# Movement speed
+	move_speed = base_speed
 	if can_sprint and Input.is_action_pressed(input_sprint):
-			move_speed = sprint_speed
-	else:
-		move_speed = base_speed
+		move_speed = sprint_speed
 
-	# Apply desired movement to velocity
-	if can_move:
-		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
-		var move_dir := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-		if move_dir:
-			velocity.x = move_dir.x * move_speed
-			velocity.z = move_dir.z * move_speed
-		else:
+	# --- FORWARD MOVEMENT ONLY ---
+	# Only move if C + G + 1 are all held
+	if Input.is_action_pressed("Car") and Input.is_action_pressed("Gears") and Input.is_action_pressed("Drive_Gear"):
+		if Input.is_action_pressed("Forward"):  # W
+			var input_dir = Input.get_vector(input_left, input_right, "Drive_Gear", "Brake")
+			var move_dir = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+			if move_dir:
+				velocity.x = move_dir.x * move_speed
+				velocity.z = move_dir.z * move_speed
+		elif Input.is_action_pressed("Brake"):  # S
+			# Gradually stop
 			velocity.x = move_toward(velocity.x, 0, move_speed)
 			velocity.z = move_toward(velocity.z, 0, move_speed)
-	else:
-		velocity.x = 0
-		velocity.y = 0
-	
-	# Use velocity to actually move
+
+	# Apply movement
 	move_and_slide()
+
 
 
 ## Rotate us to look around.
